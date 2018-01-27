@@ -1,0 +1,63 @@
+---
+title: "wholeGamedoc"
+output: html_document
+---
+## Origins:
+document I created watching Hadley Wickham's whole game youtube video
+https://www.youtube.com/watch?v=go5Au01Jrvs
+
+apparently all of this is already here:
+https://github.com/hadley/building-permits
+
+but i'm doing this from scratch, to learn...
+
+```{r setup}
+library(tidyverse)
+```
+
+## Data import
+
+Data downloaded from: https://github.com/hadley/building-permits/blob/master/dataPermit_full.csv
+
+
+```{r}
+permits_raw <- read_csv("dataPermit_full.csv", na = "null")
+permits_raw
+```
+
+## Data
+
+- date: month/year
+- f1 : 1 family house
+- f24 : 2-4 families
+- f5 : 5 family units
+- unit : number of buildings
+- change in units
+- value : value of building
+- valchange : change in value
+
+```{r}
+permitLastTenYears <- permits_raw %>%
+  separate(date, c("month", "year"), "/", convert = TRUE)
+```
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
