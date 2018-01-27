@@ -38,7 +38,7 @@ permits_raw
 
 ```{r}
 permitLastTenYears <- permits_raw %>%
-  separate(date, c("month", "year"), "/", convert = TRUE)
+  separate(date, c("month", "year"), "/", convert = TRUE) %>% filter(year > 2007)
 ```
 
 
