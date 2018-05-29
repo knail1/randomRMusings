@@ -1,0 +1,8 @@
+prologue note: I think there was an explicit ask for providing a separate R script. Personally I like RMD better as the code is emeded with doco; In the future, please ensure you extract all the R code and put that in a separate R script and upload that too along with your RMD PDF.  
+Q1. Interesting idea. Not sure where you'll get your training data for systems which are hacked and show abnormal traffic and behavioral patterns. You have to always ask the question, "do I have the data?". If there isn't, then your first job is to collect this data.
+
+Q2.2 clean.  liked your smart use of c(10^(-4:6)) to create the C array. also, elegant way of printing  equation.
+Q2.2.2. the idea is to iterate through the Cs,  the optimum weight is different for each model.
+Q2.2.3. you sampled 60% of train data, but didnt measure against 40% test data. your results are off , k=5 is optimum.
+
+Summary: try to uplevel to "what" the results are telling you like 3.1.b eg why higher Cs dontchange accuracy etc
