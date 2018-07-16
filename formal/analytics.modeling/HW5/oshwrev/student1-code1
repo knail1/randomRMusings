@@ -1,0 +1,58 @@
+##############################################3
+## 11.1
+#############################################3
+rm(list=ls())
+set.seed(1)
+#Read data
+uscrime <- read.table("11.1uscrimeSummer2018.txt", stringsAsFactors=FALSE, header=TRUE)
+
+#scale the data first
+#do not scale the binary and the last column
+uscrime2 <- as.data.frame(scale(uscrime))
+uscrime_scaled <- uscrime2[,-2]
+uscrime_scaled$So <- uscrime[,2] #original binary colulmn
+uscrime_scaled$Crime <- uscrime$Crime #original last column
+
+########################
+#STEPWISE Regression
+########################
+model_l <- lm(Crime~., data=uscrime_scaled)
+step(model_l, scope = list(lower = formula(lm(Crime~1,data=uscrime_scaled)),
+                           upper = formula(lm(Crime~.,data=uscrime_scaled))),
+                           direction = "both")
+
+#The Stepwise Regression (variable selection method) gave me these params to use
+model_lm <- lm(formula = Crime~M+Ed+Po1+M.F+U1+U2+Ineq+Prob, data=uscrime)
+
+summary(model_lm)
+#install.packages("DAAG")
+#library(DAAG)
+cv.lm(uscrime, model_lm, m=5, plotit=TRUE)
+########################
+#LASSO
+########################
+install.packages("glmnet")
+library(glmnet)
+
+set.seed(1)
+
+model_lasso <- cv.glmnet(x=as.matrix(uscrime[,-16]),
+	                         y=as.matrix(uscrime[,16]),
+	                         alpha=1,
+	                         nfolds=5,
+	                         type.measure="mse",
+	                         family="gaussian")
+plot(model_lasso)
+
+
+
+############################################3
+##12.2
+############################################
+
+rm(list=ls())
+#install.packages("FrF2")
+library(FrF2)
+set.seed(42)
+FrF2(nruns = 16, nfactors=10)
+

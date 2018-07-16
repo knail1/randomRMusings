@@ -1,0 +1,45 @@
+# clear variables
+rm(list=ls())
+# library for visualizatio of PCA
+library(factoextra)
+# set working directory
+setwd("/Users/gregorytrautman/Greg Learning/ISYE 6501 Homework 3")
+# read in the temperature data
+crime_data <- read.table("uscrime.txt", header = TRUE, check.names  = FALSE)
+
+# remove response column so I have data set with only data for functions below
+only_crime_data <- subset(crime_data , select = -c(Crime))
+# run PCA function
+pca_data <- prcomp(only_crime_data, scale = TRUE)
+# visualization aids
+screeplot(pca_data, type = "line")
+biplot (pca_data)
+fviz_eig(pca_data)
+
+# add PCA data to crime data
+crime_plus_pca <- cbind(crime_data,pca_data$x[,1:5])
+only_pca <- crime_plus_pca[,16:21]
+
+crime_model <- lm(Crime ~ . , data = only_pca)
+
+summary(crime_model)
+
+# coeffients only 2- 9 to skip intercept 
+crime_model_c <- crime_model$coefficients[2:6]
+# first 8 components need to be transposed to line up the variables names in the same matrix format
+selected_pc <- t(pca_onlydata$rotation[,1:5])
+# new coefficietinfs
+coef <- crime_model_c %*% selected_pc
+
+#intercept
+intercept <-crime_model$coefficients[1]-sum(coef * sapply(only_crime_data,mean) / sapply (only_crime_data,sd))
+
+# unscale the coef by dividing by the standard deviation
+coef <- coef/sapply(crime_data[,1:15],sd)
+
+predictions <- as.matrix(crime_data[,1:15])%*%t(coef) + intercept
+
+#R squred value is correlation quared
+r_square <- cor(predictions,crime_data$Crime) * cor(predictions,crime_data$Crime)
+
+

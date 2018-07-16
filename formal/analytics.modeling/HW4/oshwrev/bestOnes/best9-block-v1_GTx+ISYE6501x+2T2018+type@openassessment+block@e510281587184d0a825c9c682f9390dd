@@ -1,0 +1,25 @@
+# clear variables
+rm(list=ls())
+# library for visualizatio of PCA
+library(factoextra)
+# set working directory
+setwd("/Users/gregorytrautman/Greg Learning/ISYE 6501 Homework 4")
+# read in the temperature data
+crime_data <- read.table("uscrime.txt", header = TRUE, check.names  = FALSE)
+# run rpart
+rt_model <- rpart(Crime ~.,data=crime_data,method = "anova")
+# plot rt_model
+rpart.plot(rt_model, fallen.leaves = TRUE)
+# force more leaves
+rt_model <- rpart(Crime ~.,data=crime_data,method = "anova",control = rpart.control(minsplit = 5))
+# make predictions based on tree
+predictions = predict (rt_model,data = crime_data[,1:15])
+r_square <- cor(predictions,crime_data$Crime) ^ 2
+
+#random forest tree
+rant_model <- randomForest(Crime ~.,data = crime_data)
+
+# make predictions based on tree
+predictions_2 = predict (rant_model,data = crime_data[,1:15])
+
+r_square_2 <-cor(predictions_2,crime_data$Crime) ^ 2

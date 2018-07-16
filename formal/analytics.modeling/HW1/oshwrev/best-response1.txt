@@ -1,0 +1,42 @@
+I have attached 2 files - first is a pdf of my answers with a copy of the code, and second is a text file of my code. I have also pasted my answers here (no code).
+
+2.1: One real-life classification example that I have run into is determining whether a person is going to pass pilot training. Some classifiers included GPA (whether they have the ability to finish the written portion of the training), pilot battery test scores (whether they have the aptitude flying-related tasks like target tracking), and physical fitness test scores (whether they will physically be able to withstand the rigors of flying).
+------------------------------------------------------------------------------------------------------------------------------------------
+2.2:
+Equation using C=100:
+Y= -0.08158492 + (-0.0010065348*A1) +( -0.0011728048*A2) + (-0.0016261967*A3) +
+(0.0030064203*A8) + (1.0049405641*A9) + (-0.0028259432*A10) + (0.002600295*A11) + (-
+0.0005349551*A12) + (-0.0012283578*A14) + (0.1063633995*A15)
+Accuracy: 0.8639
+Varying C from 1 to 10000 didn’t cause much impact, and it didn’t force all of my predicted values to 0
+or 1. Making C super small (.0000001) made the accuracy much worse at 0.5474. C=1000000 made my
+computer work much harder and only put the accuracy at 0.6254.
+------------------------------------------------------------------------------------------------------------------------------------------
+2.3
+I tested both Besseldot and RBFdot. Besseldot gave me an accuracy of 0.925. RBFdot gave me accuracy
+of 0.951. I left the C value at 100 for both of these models.
+------------------------------------------------------------------------------------------------------------------------------------------
+2.4
+Using the kknn function, I created a new function that used a for loop and kknn with data[-i,] and data[i,]
+to omit the current row from the calculation. I scaled the data. I used k=N, with N being the input of my
+function so I could later run the function and vary N as a way to find the best k value. I then put the
+predicted value into a vector.
+I ran my function to test the best k values using N= 0 to 50, and I found, using the max() and
+which.max() functions, that k=12 has the highest accuracy at 0.853211.
+------------------------------------------------------------------------------------------------------------------------------------------
+3.1.a
+Using cross-validation and k nearest neighbors:
+I used the train.kknn model, and I broke my data into 75% training and 25% testing. I gave the model
+multiple kernel options and it gave back that “biweight” was my best kernel, with my best k as 69. This
+gave me an accuracy of 0.847561.
+------------------------------------------------------------------------------------------------------------------------------------------
+3. 1.b
+I used KVSM for this section. First I split the data into 60% training, 20% validation, and 20% testing. I
+used the training data to find 3 models using 3 different kernels (vanilladot, besseldot, and rbfdot). I
+then applied the 3 models to my validation data, and I got the highest accuracy with vanilladot (0.8931),
+with rbfdot next best (0.8321) and besseldot last (0.8168). Using the testing data and the best model
+(vanilladot), I found the accuracy to be 0.8779.
+The equation for my best model would be:
+Y=-.1274082+(-0.0026496445*A1) + (-0.0096544691 * A2) + (0.0007262427*A3) + (0.9997711230*A9) +
+(-0.0055269705*A10) + (0.0055952231*A11) + (0.0033354734*A12) + (-0.0092123644*A14) +
+(0.1260694356*A15)

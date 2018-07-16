@@ -1,0 +1,5 @@
+very visually aesthetic and well written. some comments (i didnt ding you on them)
+1. you need to normalize your data before lasso/elastic net (you can use the scale() function which uses the common standardization approach (x-u)/sd). without scaling, some of your coefficients will be artificially large or small and some of the covariants will be treated unfairly resulting in an inefficient model
+
+12.1 you were going somewhere with this, but stopped short on "how" you would set up the design for the experiments with the heart patients
+

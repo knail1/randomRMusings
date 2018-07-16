@@ -1,0 +1,422 @@
+---
+title: "H5-ISYE6501x-Summer2018-OA"
+author: "OA"
+date: "6/16/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Objectives
+
+The first area of focus of Week5's homework is to test the course material for week 5. Primarily, variable selection methodologies (like stepwise, lasso, elasticnet), critical thinking around design of experiments such as A/B testing as applicable in our lives so as to internalize the concept, reducing massive amount of permutations to run through A/B testing by using factorial design methods and again, finding real life examples that fit various mathemetical distributions discussed like binomial, poisson, geometric etc.
+
+
+```{r preRequisites, echo=FALSE, message=FALSE, warning=FALSE}
+# installing packages if needed
+if("ggplot2" %in% rownames(installed.packages()) == FALSE) {install.packages("ggplot2")}
+#if("grid" %in% rownames(installed.packages()) == FALSE) {install.packages("grid")}
+#if("gridExtra" %in% rownames(installed.packages()) == FALSE) {install.packages("gridExtra")}
+#if("gtools" %in% rownames(installed.packages()) == FALSE) {install.packages("gtools")}
+#if("reshape" %in% rownames(installed.packages()) == FALSE) {install.packages("reshape")}
+if("purrr" %in% rownames(installed.packages()) == FALSE) {install.packages("purrr")}
+if("FrF2" %in% rownames(installed.packages()) == FALSE) {install.packages("FrF2")}
+if("glmnet" %in% rownames(installed.packages()) == FALSE) {install.packages("glmnet")}
+
+# loading libraries
+rm(list = ls())
+library(ggplot2)
+#library(grid)
+#library(gridExtra)
+#library(gtools)
+#library(reshape)
+library(purrr)
+library(FrF2)
+library(glmnet)
+
+```
+
+
+
+####Question 11.1
+
+**Using the crime data set uscrime.txt from Questions 8.2, 9.1, and 10.1, build a regression model using:**
+**1. Stepwise regression **
+**2. Lasso**
+**3. Elastic net**
+**For Parts 2 and 3, remember to scale the data first – otherwise, the regression coefficients will be on different scales and the constraint won’t have the desired effect. For Parts 2 and 3, use the glmnet function in R.**
+
+- The overall approach we will take in implmenting (one variant of) stepwise regression is:
+  1. to start with no factors, and each step we'll be removing or adding a factor..
+  2. initially, we run the regression model by adding one variable. 
+  3.  We see each added factors efficacy by looking at its p-value 
+    - if all of them are effective, we keep it and add another (loop to the top)
+    - if any of them is ineffective (p>0.15) we prune it.
+  4. we loop through all the factors until we drain them.
+  
+- First we download and load the data
+
+```{r loadData-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+
+dataFile <- "uscrime.txt"
+if (!file.exists(dataFile)) {
+  #crimeDataURL <- paste0(c("http://www.statsci.org/data/general/uscrime.txt"))
+  crimeDataURL <- paste0(c("https://prod-edxapp.edx-cdn.org/assets/courseware/v1/17b85cea5d0e613bf08025ca2907b62f/asset-v1:GTx+ISYE6501x+2T2018+type@asset+block/11.1uscrimeSummer2018.txt"))
+  
+  download.file(crimeDataURL, dataFile) }
+
+crimeDataTable <- read.table(dataFile, header = TRUE )
+
+```
+
+we will use forward step-wise regression:
+
+note, we are using the step() function, which chooses a model based on the lowest AIC score..
+```{r applyStepWise-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+stepWiseModel <- lm(Crime~1, data = crimeDataTable)
+step(stepWiseModel, scope = formula(lm(Crime~., data = crimeDataTable)), direction = "forward")
+
+```
+
+From the output above, we can see that the forward step-wise regression model has found us 6 optimum parameters with an AIC score of 504.79.
+
+
+Just for archival purposes, we also will do a forward & backward step-wise regression here to see if the results are better:
+
+```{r swFB-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+swModelForwardBackward <- lm(Crime~1 , data = crimeDataTable)
+step(swModelForwardBackward, scope = list(lower = formula(lm(Crime~1, data=crimeDataTable)),
+                                          upper = formula(lm(Crime~., data=crimeDataTable))),
+                                          direction = "both")
+```
+
+As we can see, both forward and fw+bck regressions us the same exact result, so let's create a model using these vars:
+
+```{r createModel-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+swModel2 <- lm (formula = Crime ~ Po1 + Ineq + Ed + M + Prob + U2, data = crimeDataTable)
+summary(swModel2)
+```
+
+Sweet adjusted R-squared of 73% and all the variables have really low p-values, so they are useful covariants. We have a winner!
+
+
+#### Lasso
+
+prior to doing Lasso, we need to scale the data first...
+
+*we actually standardize instead of scaling as the former does not alter the T and p values*
+the way I understand this is that when you scale the data, you have to scale each variable between its extremem possible bounded values (a and b), vs in the case of standardization you apply the standard approach of (x-u)/sd to all values, so you are just normalizing them...
+
+```{r scaleData-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+scaledData <- scale(crimeDataTable)
+```
+
+
+- now we run the cv.glmnet() function with alpha (or as in the notes, lambda =1, which makes this model lasso
+- by the way, anything 0<x<1 will make this same model elasticnet!
+
+```{r lassomodelrun-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+
+lassoModel <- cv.glmnet(x = as.matrix(scaledData[,-16]),
+                        y = as.matrix(scaledData[,16]),
+                        alpha = 1,
+                        nfolds = 5,
+                        type.measure = "mse",
+                        family = "gaussian")
+
+
+plot(lassoModel)#
+#cbind(lassoModel$lambda, lassoModel$cvm)
+```
+
+- so for each of the lambda values, the cv.glmnet() generates co-efficients, and if you plot it against the mse (mean squared error) you can find the most optimum lambda value.
+- note: these numbers are way smaller than what the TA showed, since i scaled the data and he didnt
+
+```{r plotOtherGraphs-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+plot(lassoModel$lambda, lassoModel$cvm)
+```
+
+- another plot we can show is how many co-efficients it choses for each lambda value. th
+
+```{r anotherplotOtherGraphs-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+plot(lassoModel$lambda, lassoModel$nzero)
+```
+
+- we can see that for the higher lambda, it picks a couple of co-efficients only, which is why it has a higher MSE
+- the better MSE models, we have more coefficients
+- let's find out the co-efficients:
+
+```{r coeff-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+coef(lassoModel, s = lassoModel$lambda.min)
+```
+ 
+so let's use these suggested coefficients (that is the ones that are not blank!) into a lm and assses quality:
+
+```{r createModelFinal-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+lassoModelWithTightenedCoefficients <- lm (formula =  Crime ~ M + So + Ed + Po1 + LF + M.F + NW + U1 + U2 + Ineq + Prob, data = crimeDataTable)
+
+summary(lassoModelWithTightenedCoefficients)
+```
+
+as we can see, Lf, NW have pretty lousy p-values. 
+
+However I did notice that lasso's coefficients for these p-values were atleast 1 order of magnitude smaller than all  others...
+
+So           5.938496e-02
+LF           5.762247e-03
+NW           9.368004e-03
+
+so my final LASSO model would be to to drop these bad variables:
+
+
+```{r finalLasso-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+lassoModelWithTightenedCoefficientsFINAL <- lm (formula =  Crime ~ M + Ed + Po1 +  M.F + U1 + U2 + Ineq + Prob, data = crimeDataTable)
+
+summary(lassoModelWithTightenedCoefficientsFINAL)
+```
+- output is MUCH better. all vars have low p-vales and the adj R-sq is 74% pretty healthy too.
+
+- so for each of the lambda values, the cv.glmnet() generates co-efficients, and if you plot it against the mse (mean squared error) you can find the most optimum lambda value.
+- note: these numbers are many fold way smaller than what the TA showed, since i scaled the data and he didnt
+
+
+```{r 2plotOtherGraphs-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+plot(lassoModel$lambda, lassoModel$cvm)
+```
+
+- another plot we can show is how many co-efficients it choses for each lambda value. th
+
+```{r 2anotherplotOtherGraphs-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+plot(lassoModel$lambda, lassoModel$nzero)
+```
+
+- we can see that for the higher lambda, it picks a couple of co-efficients only, which is why it has a higher MSE
+- the better MSE models, we have more coefficients
+- let's find out the co-efficients:
+
+```{r 2coeff-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+coef(lassoModel, s = lassoModel$lambda.min)
+```
+ 
+so let's use these suggested coefficients (that is the ones that are not blank!) into a lm and assses quality:
+
+```{r lassocreateModelFinal-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+lassoModelWithTightenedCoefficients <- lm (formula =  Crime ~ M + So + Ed + Po1 + LF + M.F + NW + U1 + U2 + Ineq + Prob, data = crimeDataTable)
+
+summary(lassoModelWithTightenedCoefficients)
+```
+
+as we can see, Lf, NW have pretty lousy p-values. 
+
+However I did notice that lasso's coefficients for these p-values were atleast 1 order of magnitude smaller than all  others...
+
+So           5.938496e-02
+LF           5.762247e-03
+NW           9.368004e-03
+
+so my final LASSO model would be to to drop these bad variables:
+
+
+```{r 2finalLasso-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+lassoModelWithTightenedCoefficientsFINAL <- lm (formula =  Crime ~ M + Ed + Po1 +  M.F + U1 + U2 + Ineq + Prob, data = crimeDataTable)
+
+summary(lassoModelWithTightenedCoefficientsFINAL)
+```
+- output is MUCH better. all vars have low p-vales and the adj R-sq is 74% pretty healthy too.
+
+#### ElasticNET
+
+- we will now attempt to loop over alpha values to find the minimum lambda
+
+```{r elasticLoopy-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+set.seed(1)
+alphaBase <- 0.1 ;
+alphaWhichGivesMinimumLambdas <- c()
+for (i in 1:9) {
+
+elasticModel <- cv.glmnet(x = as.matrix(scaledData[,-16]),
+                        y = as.matrix(scaledData[,16]),
+                        alpha = i*alphaBase,
+                        nfolds = 5,
+                        type.measure = "mse",
+                        family = "gaussian")
+
+
+alphaWhichGivesMinimumLambdas[i] <- elasticModel$lambda.min
+
+}
+print("the alpha which gives the minimum lambda is :")
+which.min(alphaWhichGivesMinimumLambdas)*alphaBase
+
+
+plot(lassoModel)#
+#cbind(lassoModel$lambda, lassoModel$cvm)
+```
+
+using seed as 1, the alpha which gets us the minimal mean squared error out of all models is 0.6 and we can confirm this by doing
+log(0.6)  = -0.22 which is about the lowest part of the curve above as well.
+
+so , now equipped with our alpha , we just run the elasticNet one more time to craft the model and evaluate the coefficients it recommends:
+
+```{r coeffElastic-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+elasticModelWithBestAlpha <- cv.glmnet(x = as.matrix(scaledData[,-16]),
+                        y = as.matrix(scaledData[,16]),
+                        alpha = which.min(alphaWhichGivesMinimumLambdas)*alphaBase,
+                        nfolds = 5,
+                        type.measure = "mse",
+                        family = "gaussian")
+
+coef(elasticModelWithBestAlpha, s = elasticModelWithBestAlpha$lambda.min)
+```
+
+it has printed a ton of variables. using what we learnt from inference in lasso, we will drop the really low vars here, namely So, Po2, Pop, NW, Wealth
+- so we're left with:
+```{r finalEquation-11.1, echo=TRUE, message=FALSE, warning=FALSE}
+
+elasticModelWithTightenedCoefficientsFINAL <- lm (formula =  Crime ~ M + Ed + Po1 +  M.F + U1 + U2 + Ineq + Prob, data = crimeDataTable)
+
+summary(elasticModelWithTightenedCoefficientsFINAL)
+
+```
+
+** Incidently this is the same exact variables that lasso also recommended! shows that both models are functioning and fairly accurate.
+
+####Question 12.1
+**Describe a situation or problem from your job, everyday life, current events, etc., for which a design of experiments approach would be appropriate.**
+
+
+At work, I'm responsible for our continuous delivery platform where all our software is developed. thousands of developers heavily use the central git tools (we employ bitbucket) for their code repository and day to day work, and we get hundreds of code commits daily. 
+
+The interface is also used for reviewing and approving code.  However, I've noticed that the code quality is very variable. We have code quality tools like sonarqube linked from the bitbucket portal but i'm not sure people use that link to review their code. I suspect it may be a matter of the link not being prominent.
+
+So I'd like to set up a design of experiment, where for some userIDs I would change the front end to show the link as more prominent with red background than others, and see if we get better clickthrough. This type of A/B testing would give us a better idea of clickthrough success.
+
+
+####Question 12.2
+**To determine the value of 10 different yes/no features to the market value of a house (large yard, solar roof, etc.), a real estate agent plans to survey 50 potential buyers, showing a fictitious house with different combinations of features. To reduce the survey size, the agent wants to show just 16 fictitious houses. Use R’s FrF2 function (in the FrF2 package) to find a fractional factorial design for this experiment: what set of features should each of the 16 fictitious houses have? Note: the output of FrF2 is “1” (include) or “-1” (don’t include) for each feature.**
+
+
+This is a simple question. We just need to run FrF2 with the number of runs which is 16 (houses) and 10 features (large yard etc)
+
+We pass these two parameters to the FrF2 function and get back a matrix of 10*16, where the columns are the value TRUE/FALSE for the feature and each row just identifies the 16 runs (houses)
+
+
+```{r FrF2-run-.12.1, echo=TRUE}
+set.seed(1)
+#numberOfRuns <- 50*16 #each buyer sees 16 houses so total number of runs is 50x16
+numberOfRuns <- 16
+numberOfFactors <- 10
+
+frf2Output <- FrF2(numberOfRuns, numberOfFactors)
+
+head(frf2Output)
+
+```
+
+To take an example of House # 5. It does NOT have feature A,C, D etc, while it does have feature B, F etc (+1)
+Each factor should have 8 factors in them. This was determined after randomly adding up each positive (+1) in each row..e.g. ```sum(frf2Output$D == 1)```
+
+
+####Question 13.1
+**For each of the following distributions, give an example of data that you would expect to follow this distribution (besides the examples already discussed in class).**
+**a. Binomial**
+In binomial distribution, we consider probability distributions for which there are just two possible outcomes with fixed probabilities summing to one.
+
+The chance that a republican vs a democrat congressman is selected for each area.
+
+**b. Geometric **
+
+The geometric distribution represents the number of failures before you get a success in a series of Bernoulli trials. 
+
+If you're a couple and trying to get pregnant, then the number of times you try and fail until you finally conceive could be considered as a geometric distribution.
+
+**c. Poisson**
+
+The Poisson distribution can be used to calculate the probabilities of various numbers of "successes" based on the mean number of successes. In order to apply the Poisson distribution, the various events must be independent. 
+
+The number of incoming shipments of mail coming to the post office every day  is an independent variable and could be a good example here.
+
+**d. Exponential **
+
+Questions concerning the time we need to wait before a given event occurs are related to the exponential distribution. If this waiting time is unknown, it is often appropriate to think of it as a random variable having an exponential distribution.
+
+An example could be : how much time will elapse before an earthquake occurs in a given island
+
+**e. Weibull**
+- we will now attempt to loop over alpha values..
+alpha <- 0.1 ;
+
+for i in 1:10 {
+
+}
+
+
+####Question 12.1
+**Describe a situation or problem from your job, everyday life, current events, etc., for which a design of experiments approach would be appropriate.**
+
+
+At work, I'm responsible for our continuous delivery platform where all our software is developed. thousands of developers heavily use the central git tools (we employ bitbucket) for their code repository and day to day work, and we get hundreds of code commits daily. 
+
+The interface is also used for reviewing and approving code.  However, I've noticed that the code quality is very variable. We have code quality tools like sonarqube linked from the bitbucket portal but i'm not sure people use that link to review their code. I suspect it may be a matter of the link not being prominent.
+
+So I'd like to set up a design of experiment, where for some userIDs I would change the front end to show the link as more prominent with red background than others, and see if we get better clickthrough. This type of A/B testing would give us a better idea of clickthrough success.
+
+
+####Question 12.2
+**To determine the value of 10 different yes/no features to the market value of a house (large yard, solar roof, etc.), a real estate agent plans to survey 50 potential buyers, showing a fictitious house with different combinations of features. To reduce the survey size, the agent wants to show just 16 fictitious houses. Use R’s FrF2 function (in the FrF2 package) to find a fractional factorial design for this experiment: what set of features should each of the 16 fictitious houses have? Note: the output of FrF2 is “1” (include) or “-1” (don’t include) for each feature.**
+
+
+This is a simple question. We just need to run FrF2 with the number of runs which is 16 (houses) and 10 features (large yard etc)
+
+We pass these two parameters to the FrF2 function and get back a matrix of 10*16, where the columns are the value TRUE/FALSE for the feature and each row just identifies the 16 runs (houses)
+
+
+```{r 2FrF2-run-.12.1, echo=TRUE}
+set.seed(1)
+#numberOfRuns <- 50*16 #each buyer sees 16 houses so total number of runs is 50x16
+numberOfRuns <- 16
+numberOfFactors <- 10
+
+frf2Output <- FrF2(numberOfRuns, numberOfFactors)
+
+head(frf2Output)
+
+```
+
+To take an example of House # 5. It does NOT have feature A,C, D etc, while it does have feature B, F etc (+1)
+Each factor should have 8 factors in them. This was determined after randomly adding up each positive (+1) in each row..e.g. ```sum(frf2Output$D == 1)```
+
+
+####Question 13.1
+**For each of the following distributions, give an example of data that you would expect to follow this distribution (besides the examples already discussed in class).**
+**a. Binomial**
+In binomial distribution, we consider probability distributions for which there are just two possible outcomes with fixed probabilities summing to one.
+
+The chance that a republican vs a democrat congressman is selected for each area.
+
+**b. Geometric **
+
+The geometric distribution represents the number of failures before you get a success in a series of Bernoulli trials. 
+
+If you're a couple and trying to get pregnant, then the number of times you try and fail until you finally conceive could be considered as a geometric distribution.
+
+**c. Poisson**
+
+The Poisson distribution can be used to calculate the probabilities of various numbers of "successes" based on the mean number of successes. In order to apply the Poisson distribution, the various events must be independent. 
+
+The number of incoming shipments of mail coming to the post office every day  is an independent variable and could be a good example here.
+
+**d. Exponential **
+
+Questions concerning the time we need to wait before a given event occurs are related to the exponential distribution. If this waiting time is unknown, it is often appropriate to think of it as a random variable having an exponential distribution.
+
+An example could be : how much time will elapse before an earthquake occurs in a given island
+
+**e. Weibull**
+
+The Weibull distribution is a continuous probability distribution
+From Google: Today, it’s commonly used to assess product reliability, analyze life data and model failure times
+
+With this in mind, we can state that Weibull can be used to estimate the life of a perishable product in a grocery store, to see how much time should it be kept out before it needs to be thrown away

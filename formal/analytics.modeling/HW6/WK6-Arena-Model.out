@@ -1,0 +1,166 @@
+
+                                      ARENA Simulation Results
+                                   Ansari, Omer - License: STUDENT
+
+                                  Summary for Replication 1 of 2
+
+Project: Unnamed Project                                             Run execution date : 6/27/2018
+Analyst: Ansari                                                      Model revision date: 6/27/2018
+
+Replication ended at time      : 60.0 Minutes 
+Base Time Units: Minutes
+
+                                           TALLY VARIABLES
+
+Identifier                                  Average   Half Width  Minimum    Maximum   Observations
+___________________________________________________________________________________________________
+
+Entity 1.VATime                             .95519     (Insuf)    .53822     1.7916        233    
+Entity 1.NVATime                            .00000     (Insuf)    .00000     .00000        233    
+Entity 1.WaitTime                           6.1160     (Insuf)    .00000     14.525        233    
+Entity 1.TranTime                           .00000     (Insuf)    .00000     .00000        233    
+Entity 1.OtherTime                          .00000     (Insuf)    .00000     .00000        233    
+Entity 1.TotalTime                          7.0712     (Insuf)    .57765     15.402        233    
+Checkin.Queue.WaitingTime                   .00000     (Insuf)    .00000     .00000        300    
+Scanner3.Queue.WaitingTime                  6.2366     (Insuf)    .00000     14.525         77    
+Scanner2.Queue.WaitingTime                  6.3555     (Insuf)    .00000     13.850         81    
+Scanner1.Queue.WaitingTime                  6.0460     (Insuf)    .00000     13.409         78    
+
+                                     DISCRETE-CHANGE VARIABLES
+
+Identifier                                  Average   Half Width  Minimum    Maximum   Final Value
+___________________________________________________________________________________________________
+
+Entity 1.WIP                                35.917     (Corr)     .00000     68.000     67.000    
+CheckR.NumberBusy                           .98591     .16665     .00000     7.0000     1.0000    
+CheckR.NumberScheduled                      10.000     (Insuf)    10.000     10.000     10.000    
+CheckR.Utilization                          .09859     .01667     .00000     .70000     .10000    
+scan2.NumberBusy                            .99715     (Insuf)    .00000     1.0000     1.0000    
+scan2.NumberScheduled                       1.0000     (Insuf)    1.0000     1.0000     1.0000    
+scan2.Utilization                           .99715     (Insuf)    .00000     1.0000     1.0000    
+scan3.NumberBusy                            .99442     (Insuf)    .00000     1.0000     1.0000    
+scan3.NumberScheduled                       1.0000     (Insuf)    1.0000     1.0000     1.0000    
+scan3.Utilization                           .99442     (Insuf)    .00000     1.0000     1.0000    
+scan1.NumberBusy                            .98294     (Insuf)    .00000     1.0000     1.0000    
+scan1.NumberScheduled                       1.0000     (Insuf)    1.0000     1.0000     1.0000    
+scan1.Utilization                           .98294     (Insuf)    .00000     1.0000     1.0000    
+Checkin.Queue.NumberInQueue                 .00000     (Insuf)    .00000     .00000     .00000    
+Scanner3.Queue.NumberInQueue                10.582     (Insuf)    .00000     21.000     21.000    
+Scanner2.Queue.NumberInQueue                11.021     (Insuf)    .00000     22.000     21.000    
+Scanner1.Queue.NumberInQueue                10.353     (Insuf)    .00000     21.000     21.000    
+
+                                             OUTPUTS
+
+Identifier                                   Value
+_____________________________________________________________
+
+Entity 1.NumberIn                           300.00    
+Entity 1.NumberOut                          233.00    
+CheckR.NumberSeized                         300.00    
+CheckR.ScheduledUtilization                 .09859    
+scan2.NumberSeized                          81.000    
+scan2.ScheduledUtilization                  .99715    
+scan3.NumberSeized                          77.000    
+scan3.ScheduledUtilization                  .99442    
+scan1.NumberSeized                          78.000    
+scan1.ScheduledUtilization                  .98294    
+System.NumberOut                            233.00    
+
+Beginning replication 2 of 2
+
+                                      ARENA Simulation Results
+                                   Ansari, Omer - License: STUDENT
+
+                                  Summary for Replication 2 of 2
+
+Project: Unnamed Project                                             Run execution date : 6/27/2018
+Analyst: Ansari                                                      Model revision date: 6/27/2018
+
+Replication ended at time      : 60.0 Minutes 
+Base Time Units: Minutes
+
+                                           TALLY VARIABLES
+
+Identifier                                  Average   Half Width  Minimum    Maximum   Observations
+___________________________________________________________________________________________________
+
+Entity 1.VATime                             .94265     (Insuf)    .52899     2.1611        235    
+Entity 1.NVATime                            .00000     (Insuf)    .00000     .00000        235    
+Entity 1.WaitTime                           6.1627     (Insuf)    .00000     12.995        235    
+Entity 1.TranTime                           .00000     (Insuf)    .00000     .00000        235    
+Entity 1.OtherTime                          .00000     (Insuf)    .00000     .00000        235    
+Entity 1.TotalTime                          7.1053     (Insuf)    .85869     13.863        235    
+Checkin.Queue.WaitingTime                   .00000     (Insuf)    .00000     .00000        300    
+Scanner3.Queue.WaitingTime                  6.0133     (Insuf)    .00000     13.399         83    
+Scanner2.Queue.WaitingTime                  6.4627     (Insuf)    .00000     12.995         80    
+Scanner1.Queue.WaitingTime                  6.2805     (Insuf)    .00000     13.300         75    
+
+                                     DISCRETE-CHANGE VARIABLES
+
+Identifier                                  Average   Half Width  Minimum    Maximum   Final Value
+___________________________________________________________________________________________________
+
+Entity 1.WIP                                35.284     (Corr)     .00000     69.000     65.000    
+CheckR.NumberBusy                           .94757     .12425     .00000     5.0000     .00000    
+CheckR.NumberScheduled                      10.000     (Insuf)    10.000     10.000     10.000    
+CheckR.Utilization                          .09476     .01242     .00000     .50000     .00000    
+scan2.NumberBusy                            .99778     (Insuf)    .00000     1.0000     1.0000    
+scan2.NumberScheduled                       1.0000     (Insuf)    1.0000     1.0000     1.0000    
+scan2.Utilization                           .99778     (Insuf)    .00000     1.0000     1.0000    
+scan3.NumberBusy                            .99225     (Insuf)    .00000     1.0000     1.0000    
+scan3.NumberScheduled                       1.0000     (Insuf)    1.0000     1.0000     1.0000    
+scan3.Utilization                           .99225     (Insuf)    .00000     1.0000     1.0000    
+scan1.NumberBusy                            .96787     (Insuf)    .00000     1.0000     1.0000    
+scan1.NumberScheduled                       1.0000     (Insuf)    1.0000     1.0000     1.0000    
+scan1.Utilization                           .96787     (Insuf)    .00000     1.0000     1.0000    
+Checkin.Queue.NumberInQueue                 .00000     (Insuf)    .00000     .00000     .00000    
+Scanner3.Queue.NumberInQueue                10.469     (Insuf)    .00000     21.000     20.000    
+Scanner2.Queue.NumberInQueue                10.763     (Insuf)    .00000     22.000     21.000    
+Scanner1.Queue.NumberInQueue                10.145     (Insuf)    .00000     21.000     21.000    
+
+                                             OUTPUTS
+
+Identifier                                   Value
+_____________________________________________________________
+
+Entity 1.NumberIn                           300.00    
+Entity 1.NumberOut                          235.00    
+CheckR.NumberSeized                         300.00    
+CheckR.ScheduledUtilization                 .09476    
+scan2.NumberSeized                          80.000    
+scan2.ScheduledUtilization                  .99778    
+scan3.NumberSeized                          83.000    
+scan3.ScheduledUtilization                  .99225    
+scan1.NumberSeized                          75.000    
+scan1.ScheduledUtilization                  .96787    
+System.NumberOut                            235.00    
+
+
+                                      ARENA Simulation Results
+                                   Ansari, Omer - License: STUDENT
+
+                                  Output Summary for 2 Replications
+
+Project: Unnamed Project                                             Run execution date : 6/27/2018
+Analyst: Ansari                                                      Model revision date: 6/27/2018
+
+
+                                             OUTPUTS
+
+Identifier                                 Average    Half-width Minimum    Maximum # Replications
+___________________________________________________________________________________________________
+
+Entity 1.NumberIn                           300.00     .00000     300.00     300.00     2
+Entity 1.NumberOut                          234.00     12.706     233.00     235.00     2
+CheckR.NumberSeized                         300.00     .00000     300.00     300.00     2
+CheckR.ScheduledUtilization                 .09667     .02436     .09476     .09859     2
+scan2.NumberSeized                          80.500     6.3530     80.000     81.000     2
+scan2.ScheduledUtilization                  .99747     .00400     .99715     .99778     2
+scan3.NumberSeized                          80.000     38.118     77.000     83.000     2
+scan3.ScheduledUtilization                  .99334     .01377     .99225     .99442     2
+scan1.NumberSeized                          76.500     19.059     75.000     78.000     2
+scan1.ScheduledUtilization                  .97540     .09572     .96787     .98294     2
+System.NumberOut                            234.00     12.706     233.00     235.00     2
+
+Simulation run time: 0.53 minutes.
+Simulation run complete.
